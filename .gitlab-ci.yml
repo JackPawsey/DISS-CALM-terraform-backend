@@ -1,0 +1,42 @@
+image:
+  name: registry.gitlab.com/jackpawsey/container-builder/with-ansible
+
+before_script:
+  - rm -rf .terraform
+  - mkdir -p ./creds
+  - echo $SERVICEACCOUNT | base64 -d > ./creds/serviceaccount.json
+  - terraform init
+
+stages:
+  - validate
+  - plan
+  - apply
+  - destroy
+
+validate:
+  stage: validate
+  script:
+    - terraform validate
+
+plan:
+  stage: plan
+  script:
+    - terraform plan -out "planfile"
+  artifacts:
+    paths:
+      - planfile
+
+apply:
+  stage: apply
+  script:
+    - terraform apply -input=false "planfile"
+  artifacts:
+    paths:
+      - terraform.tfstate
+  when: manual
+  
+destroy:
+  stage: destroy
+  script:
+    - terraform destroy -auto-approve -force
+  when: manual

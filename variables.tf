@@ -6,3 +6,7 @@ variable "s3_bucket_names" {
 variable "ddb_table_names" {
   description = "Name of state lock table."
 }
+
+variable "region" {
+  description = "Region of deployment."
+}
